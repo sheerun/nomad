@@ -134,3 +134,18 @@ group "database" {
   network namespace of the host. There are a couple of ways to solve this, one
   way is to run the container in the host networking mode, or make the Consul
   agent listen on an interface on the network namespace of the container.
+
+## Recomendations for Consul setup
+
+We currently reccomend users to run Consul Agents on Nomad via a system
+scheduler with static ports either using the exec driver or using the docker
+driver. If the docker driver is used using the host networking is recommended so
+that the Nomad client can connect to the Consul Agent.
+
+We recommend users to run Consul Servers outside Nomad, details around how to
+run Consul Server is available [here]
+(https://consul.io/docs/guides/index.html). It's currently not possible to run
+Consul Server as Nomad Jobs if the Consul Agents are also run via system jobs
+because that results in port collisions for the Consul Servers since the Agents
+and Servers demands the same set of static ports.
+
