@@ -250,6 +250,12 @@ func (s *GenericScheduler) computePlacements(place []allocTuple) error {
 		return err
 	}
 
+	// Specialize the failure message if no nodes are ready in the datacenter.
+	failedMsg := "failed to find a node for placement"
+	if len(nodes) == 0 {
+		failedMsg = fmt.Sprintf("no nodes ready in datacenters: %v", s.job.Datacenters)
+	}
+
 	// Update the set of placement ndoes
 	s.stack.SetNodes(nodes)
 
@@ -293,7 +299,7 @@ func (s *GenericScheduler) computePlacements(place []allocTuple) error {
 			s.plan.AppendAlloc(alloc)
 		} else {
 			alloc.DesiredStatus = structs.AllocDesiredStatusFailed
-			alloc.DesiredDescription = "failed to find a node for placement"
+			alloc.DesiredDescription = failedMsg
 			alloc.ClientStatus = structs.AllocClientStatusFailed
 			alloc.TaskStates = initTaskState(missing.TaskGroup, structs.TaskStateDead)
 			s.plan.AppendFailed(alloc)
