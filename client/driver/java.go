@@ -164,7 +164,7 @@ func (d *JavaDriver) Start(ctx *ExecContext, task *structs.Task) (DriverHandle, 
 		waitCh: make(chan *cstructs.WaitResult, 1),
 	}
 
-	go h.run()
+	go h.Wait()
 	return h, nil
 }
 
@@ -182,7 +182,6 @@ func (d *JavaDriver) Open(ctx *ExecContext, handleID string) (DriverHandle, erro
 		waitCh: make(chan *cstructs.WaitResult, 1),
 	}
 
-	go h.run()
 	return h, nil
 }
 
@@ -210,7 +209,7 @@ func (h *javaHandle) Kill() error {
 	}
 }
 
-func (h *javaHandle) run() {
+func (h *javaHandle) Wait() {
 	res := h.cmd.Wait()
 	close(h.doneCh)
 	h.waitCh <- res

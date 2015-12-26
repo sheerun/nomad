@@ -203,7 +203,7 @@ func (d *QemuDriver) Start(ctx *ExecContext, task *structs.Task) (DriverHandle, 
 		waitCh: make(chan *cstructs.WaitResult, 1),
 	}
 
-	go h.run()
+	go h.Wait()
 	return h, nil
 }
 
@@ -220,7 +220,6 @@ func (d *QemuDriver) Open(ctx *ExecContext, handleID string) (DriverHandle, erro
 		doneCh: make(chan struct{}),
 		waitCh: make(chan *cstructs.WaitResult, 1),
 	}
-	go h.run()
 	return h, nil
 }
 
@@ -250,7 +249,7 @@ func (h *qemuHandle) Kill() error {
 	}
 }
 
-func (h *qemuHandle) run() {
+func (h *qemuHandle) Wait() {
 	res := h.cmd.Wait()
 	close(h.doneCh)
 	h.waitCh <- res
