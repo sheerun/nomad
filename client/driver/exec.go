@@ -2,6 +2,7 @@ package driver
 
 import (
 	"fmt"
+	"io"
 	"path/filepath"
 	"runtime"
 	"syscall"
@@ -164,4 +165,8 @@ func (h *execHandle) run() {
 	close(h.doneCh)
 	h.waitCh <- res
 	close(h.waitCh)
+}
+
+func (h *execHandle) Logs() (io.Reader, error) {
+	return nil, nil
 }

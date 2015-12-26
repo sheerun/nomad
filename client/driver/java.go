@@ -3,6 +3,7 @@ package driver
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os/exec"
 	"path/filepath"
 	"runtime"
@@ -214,4 +215,8 @@ func (h *javaHandle) run() {
 	close(h.doneCh)
 	h.waitCh <- res
 	close(h.waitCh)
+}
+
+func (h *javaHandle) Logs() (io.Reader, error) {
+	return nil, nil
 }

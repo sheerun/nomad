@@ -2,6 +2,7 @@ package driver
 
 import (
 	"fmt"
+	"io"
 	"os/exec"
 	"path/filepath"
 	"regexp"
@@ -254,4 +255,8 @@ func (h *qemuHandle) run() {
 	close(h.doneCh)
 	h.waitCh <- res
 	close(h.waitCh)
+}
+
+func (h *qemuHandle) Logs() (io.Reader, error) {
+	return nil, nil
 }

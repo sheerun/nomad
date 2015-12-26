@@ -2,6 +2,7 @@ package driver
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"path/filepath"
 	"sync"
@@ -94,6 +95,9 @@ type DriverHandle interface {
 
 	// Kill is used to stop the task
 	Kill() error
+
+	// Logs return an io reader which streams the logs
+	Logs() (io.Reader, error)
 }
 
 // ExecContext is shared between drivers within an allocation
