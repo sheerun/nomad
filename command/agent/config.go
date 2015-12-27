@@ -156,6 +156,9 @@ type ClientConfig struct {
 
 	// The network link speed to use if it can not be determined dynamically.
 	NetworkSpeed int `hcl:"network_speed"`
+
+	// LogDaemon is used to configure the log daemon process
+	LogDaemon *LogDaemon `hcl:"log_daemon"`
 }
 
 // ServerConfig is configuration specific to the server mode
@@ -211,6 +214,14 @@ type ServerConfig struct {
 	// the cluster until an explicit join is received. If this is set to
 	// true, we ignore the leave, and rejoin the cluster on start.
 	RejoinAfterLeave bool `hcl:"rejoin_after_leave"`
+}
+
+// LogDaemon is the configuration for the log daemon process that runs in every
+// nomad client
+type LogDaemon struct {
+	Cpu      int    `hcl:"cpu"`
+	MemoryMB int    `hcl:"memory"`
+	Addr     string `hcl:"addr"`
 }
 
 // Telemetry is the telemetry configuration for the server
@@ -283,6 +294,11 @@ func DefaultConfig() *Config {
 		Client: &ClientConfig{
 			Enabled:      false,
 			NetworkSpeed: 100,
+			LogDaemon: &LogDaemon{
+				Cpu:      400,
+				MemoryMB: 512,
+				Addr:     "127.0.0.1:8800",
+			},
 		},
 		Server: &ServerConfig{
 			Enabled:          false,
@@ -500,6 +516,9 @@ func (a *ClientConfig) Merge(b *ClientConfig) *ClientConfig {
 	if b.NetworkSpeed != 0 {
 		result.NetworkSpeed = b.NetworkSpeed
 	}
+	if b.LogDaemon != nil {
+		result.LogDaemon = result.LogDaemon.Merge(b.LogDaemon)
+	}
 
 	// Add the servers
 	result.Servers = append(result.Servers, b.Servers...)
@@ -518,6 +537,25 @@ func (a *ClientConfig) Merge(b *ClientConfig) *ClientConfig {
 	}
 	for k, v := range b.Meta {
 		result.Meta[k] = v
+	}
+
+	return &result
+}
+
+// Merge is used to merge two log daemon configs together
+func (a *LogDaemon) Merge(b *LogDaemon) *LogDaemon {
+	result := *a
+
+	if b.Cpu != 0 {
+		result.Cpu = b.Cpu
+	}
+
+	if b.MemoryMB != 0 {
+		result.MemoryMB = b.MemoryMB
+	}
+
+	if b.Addr != "" {
+		result.Addr = b.Addr
 	}
 
 	return &result

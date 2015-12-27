@@ -217,5 +217,5 @@ func (h *javaHandle) Wait() {
 }
 
 func (h *javaHandle) Logs() (io.Reader, error) {
-	return nil, nil
+	return h.cmd.Logs()
 }
