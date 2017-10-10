@@ -1072,13 +1072,13 @@ func (c *Client) periodicSnapshot() {
 // run is a long lived goroutine used to run the client
 func (c *Client) run() {
 	// Watch for changes in allocations
-	allocUpdates := make(chan *allocUpdates, 8)
+	allocUpdates := make(chan *AllocUpdates, 8)
 	go c.watchAllocations(allocUpdates)
 
 	for {
 		select {
 		case update := <-allocUpdates:
-			c.runAllocs(update)
+			c.RunAllocs(update)
 
 		case <-c.shutdownCh:
 			return
@@ -1296,17 +1296,17 @@ func (c *Client) allocSync() {
 
 // allocUpdates holds the results of receiving updated allocations from the
 // servers.
-type allocUpdates struct {
+type AllocUpdates struct {
 	// pulled is the set of allocations that were downloaded from the servers.
-	pulled map[string]*structs.Allocation
+	Pulled map[string]*structs.Allocation
 
 	// filtered is the set of allocations that were not pulled because their
 	// AllocModifyIndex didn't change.
-	filtered map[string]struct{}
+	Filtered map[string]struct{}
 }
 
 // watchAllocations is used to scan for updates to allocations
-func (c *Client) watchAllocations(updates chan *allocUpdates) {
+func (c *Client) watchAllocations(updates chan *AllocUpdates) {
 	// The request and response for getting the map of allocations that should
 	// be running on the Node to their AllocModifyIndex which is incremented
 	// when the allocation is updated by the servers.
@@ -1459,9 +1459,9 @@ OUTER:
 		}
 
 		// Push the updates.
-		update := &allocUpdates{
-			filtered: filtered,
-			pulled:   pulledAllocs,
+		update := &AllocUpdates{
+			Filtered: filtered,
+			Pulled:   pulledAllocs,
 		}
 		select {
 		case updates <- update:
@@ -1499,8 +1499,8 @@ func (c *Client) watchNodeUpdates() {
 	}
 }
 
-// runAllocs is invoked when we get an updated set of allocations
-func (c *Client) runAllocs(update *allocUpdates) {
+// RunAllocs is invoked when we get an updated set of allocations
+func (c *Client) RunAllocs(update *AllocUpdates) {
 	// Get the existing allocs
 	c.allocLock.RLock()
 	exist := make([]*structs.Allocation, 0, len(c.allocs))

@@ -28,7 +28,7 @@ func (d *diffResult) GoString() string {
 
 // diffAllocs is used to diff the existing and updated allocations
 // to see what has happened.
-func diffAllocs(existing []*structs.Allocation, allocs *allocUpdates) *diffResult {
+func diffAllocs(existing []*structs.Allocation, allocs *AllocUpdates) *diffResult {
 	// Scan the existing allocations
 	result := &diffResult{}
 	existIdx := make(map[string]struct{})
@@ -38,8 +38,8 @@ func diffAllocs(existing []*structs.Allocation, allocs *allocUpdates) *diffResul
 
 		// Check if the alloc was updated or filtered because an update wasn't
 		// needed.
-		alloc, pulled := allocs.pulled[exist.ID]
-		_, filtered := allocs.filtered[exist.ID]
+		alloc, pulled := allocs.Pulled[exist.ID]
+		_, filtered := allocs.Filtered[exist.ID]
 
 		// If not updated or filtered, removed
 		if !pulled && !filtered {
@@ -58,7 +58,7 @@ func diffAllocs(existing []*structs.Allocation, allocs *allocUpdates) *diffResul
 	}
 
 	// Scan the updated allocations for any that are new
-	for id, pulled := range allocs.pulled {
+	for id, pulled := range allocs.Pulled {
 		if _, ok := existIdx[id]; !ok {
 			result.added = append(result.added, pulled)
 		}
